@@ -96,7 +96,7 @@ namespace DataLisp
             {
                 str += DumpNode(n, depth + 1);
             }
-            str += white + ")\n";
+            str += white + "}\n";
             return str;
         }
 
@@ -106,9 +106,13 @@ namespace DataLisp
             for (int i = 0; i < depth; ++i)
                 white += " ";
 
-            string str = white + "Data {" + node.Key + ":\n";
+            string str = white + "Data {";
+
+            if(node.Key != null && node.Key != "")
+                str += node.Key + ": ";
+
             str += DumpNode(node.Value, depth + 1);
-            str += white + ")\n";
+            str += white + "}\n";
             return str;
         }
 
@@ -140,10 +144,12 @@ namespace DataLisp
                         str += "false";
                     break;
                 case Internal.ValueNodeType.Array:
+                    str += "[";
                     foreach(Internal.ValueNode n in node.Array.Nodes)
                     {
-                        str += DumpNode(n, depth + 1);
+                        str += DumpNode(n, depth + 1)+",";
                     }
+                    str += "]";
                     break;
                 case Internal.ValueNodeType.Invalid:
                     str += "INVALID";
@@ -178,7 +184,7 @@ namespace DataLisp
                 white += " ";
 
             string str;
-            if (d.Key == "")
+            if (d.Key == "" || d.Key == null)
                 str = GenerateValue(d, depth + 1);
             else
                 str = ":" + d.Key + " " + GenerateValue(d, depth + 1);
