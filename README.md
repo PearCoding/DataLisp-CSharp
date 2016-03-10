@@ -8,7 +8,7 @@ The C++ library can be found here: https://github.com/PearCoding/DataLisp
 
 ### License
 
-Copyright (c) 2016, Ömercan Yazici <omercan AT pearcoding.eu>
+Copyright (c) 2016, Ömercan Yazici < omercan AT pearcoding.eu >
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -42,5 +42,5 @@ http://pearcoding.eu/projects/datalisp
 At the moment you can build the library for Windows and Linux with cmake.
 Currently there is no tested support for MacOS X, but it should be still useable there.
 
-If you want to help us, please write an e-mail to Ömercan Yazici <omercan AT pearcoding.eu>
+If you want to help us, please write an e-mail to Ömercan Yazici < omercan AT pearcoding.eu >
  
