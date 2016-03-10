@@ -139,8 +139,10 @@ namespace DataLisp.Internal
 
                 return Next();
             }
-            else if (CurrentChar() == '"')//String
+            else if (CurrentChar() == '"' || CurrentChar() == '\'')//String
             {
+                char start = CurrentChar();
+
                 string str = "";
                 while (true)
                 {
@@ -159,15 +161,118 @@ namespace DataLisp.Internal
                         ++_Position;
                         ++_Column;
 
-                        if (_Position >= _Source.Length ||
-                            CurrentChar() == '\n')
+                        if (_Position >= _Source.Length)
                         {
                             _Logger.Log(_Line, _Column, LogLevel.Error,
                                 "Invalid use of the '\\' operator");
                         }
-                        str += CurrentChar();
+                        else if (CurrentChar() == '\n')
+                        {
+                            ++_Line;
+                            ++_Position;
+                            _Column = 1; 
+                        }
+                        else
+                        {
+                            switch (CurrentChar())
+                            {
+                                case 'n':// New line
+                                    str += '\n';
+                                    break;
+                                case 't':// Tab
+                                    str += '\t';
+                                    break;
+                                case 'r':// Carriage return 
+                                    str += '\r';
+                                    break;
+                                case 'a':// Audible bell 
+                                    str += '\a';
+                                    break;
+                                case 'b':// Backspace
+                                    str += '\b';
+                                    break;
+                                case 'f':// Form feed
+                                    str += '\f';
+                                    break;
+                                case 'v':// Vertical tab
+                                    str += '\v';
+                                    break;
+                                case 'x'://Binary [2]
+                                case 'u'://Unicode [4]
+                                case 'U'://Unicode [8]
+                                    {
+                                        int length = CurrentChar() == 'x' ? 2 : (CurrentChar() == 'u' ? 4 : 8);
+                                        string uni_val = "";
+                                        for (int i = 0; i < length; ++i)
+                                        {
+                                            ++_Position;
+                                            ++_Column;
+                                            if (_Position < _Source.Length || CurrentChar() == '\n')
+                                            {
+                                                _Logger.Log(_Line, _Column, LogLevel.Error, "Invalid use of Unicode escape sequence.");
+                                                break;
+                                            }
+
+                                            uni_val += CurrentChar();
+                                        }
+
+                                        if (uni_val.Length == length)
+                                        {
+                                            try
+                                            {
+                                                uint uni = System.Convert.ToUInt32(uni_val, 16);
+
+                                                if (length != 2)
+                                                {
+                                                    if (uni <= 0x7F)
+                                                    {
+                                                        str += (char)uni;
+                                                    }
+                                                    else if (uni <= 0x7FF)
+                                                    {
+                                                        uint d = uni & 0x7FF;
+                                                        str += (char)(0xC0 | ((d & 0x7C0) >> 6));
+                                                        str += (char)(0x80 | (d & 0x3F));
+                                                    }
+                                                    else if (uni <= 0xFFFF)
+                                                    {
+                                                        uint d = uni & 0xFFFF;
+                                                        str += (char)(0xE0 | ((d & 0xF000) >> 12));
+                                                        str += (char)(0x80 | ((d & 0xFC0) >> 6));
+                                                        str += (char)(0x80 | (d & 0x3F));
+                                                    }
+                                                    else if (uni <= 0x10FFFF)
+                                                    {
+                                                        uint d = uni & 0x10FFFF;
+                                                        str += (char)(0xF0 | ((d & 0x1C0000) >> 18));
+                                                        str += (char)(0x80 | ((d & 0x3F000) >> 12));
+                                                        str += (char)(0x80 | ((d & 0xFC0) >> 6));
+                                                        str += (char)(0x80 | (d & 0x3F));
+                                                    }
+                                                    else
+                                                    {
+                                                        _Logger.Log(_Line, _Column, LogLevel.Error, "Invalid Unicode range.");
+                                                    }
+                                                }
+                                                else//Binary
+                                                {
+                                                    str += (char)uni;
+                                                }
+                                            }
+                                            catch(System.Exception)
+                                            {
+                                                _Logger.Log(_Line, _Column, LogLevel.Error, "Given Unicode sequence is invalid.");
+                                            }
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    str += CurrentChar();
+                                    break;
+                            }
+                        }
                     }
-                    else if (CurrentChar() == '"')
+                    else if (CurrentChar() == start)
                     {
                         ++_Position;
                         ++_Column;
