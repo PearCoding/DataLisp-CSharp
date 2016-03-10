@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/PearCoding/DataLisp-CSharp.svg?branch=master)](https://travis-ci.org/PearCoding/DataLisp-CSharp)
 
-## DataLisp
+## DataLisp (C#)
 
 DataLisp is an modular and modable configuration scripting language
 This is the official C# port of the DataLisp v1 C++ library.
