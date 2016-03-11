@@ -262,10 +262,7 @@ namespace DataLisp.Internal
                                                     }
 
                                                     if(size != 0)
-                                                    {
-                                                        UTF8Encoding utf8 = new UTF8Encoding();
-                                                        str += utf8.GetString(tmp, 0, size);
-                                                    }
+                                                        str += Encoding.UTF8.GetString(tmp, 0, size);
                                                 }
                                                 else//Binary
                                                 {
