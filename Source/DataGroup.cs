@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace DataLisp
 {
-    class DataGroup
+    public class DataGroup
     {
         string _ID;
         List<Data> _IndexedData = new List<Data>();

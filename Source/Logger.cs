@@ -30,7 +30,7 @@
 
 namespace DataLisp
 {
-    enum LogLevel
+    public enum LogLevel
     {
         Debug,
         Info,
@@ -39,7 +39,7 @@ namespace DataLisp
         Fatal
     }
 
-    abstract class Logger
+    public abstract class Logger
     {
         public abstract void Log(int line, int column, LogLevel level, string str);
 

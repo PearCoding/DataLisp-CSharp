@@ -28,6 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
+using System.Text;
 namespace DataLisp.Internal
 {
     class Lexer
@@ -207,7 +208,7 @@ namespace DataLisp.Internal
                                         {
                                             ++_Position;
                                             ++_Column;
-                                            if (_Position < _Source.Length || CurrentChar() == '\n')
+                                            if (_Position >= _Source.Length || CurrentChar() == '\n')
                                             {
                                                 _Logger.Log(_Line, _Column, LogLevel.Error, "Invalid use of Unicode escape sequence.");
                                                 break;
@@ -224,34 +225,46 @@ namespace DataLisp.Internal
 
                                                 if (length != 2)
                                                 {
+                                                    byte[] tmp = new byte[4];
+                                                    int size = 0;
                                                     if (uni <= 0x7F)
                                                     {
-                                                        str += (char)uni;
+                                                        tmp[0] = (byte)uni;
+                                                        size = 1;
                                                     }
                                                     else if (uni <= 0x7FF)
                                                     {
                                                         uint d = uni & 0x7FF;
-                                                        str += (char)(0xC0 | ((d & 0x7C0) >> 6));
-                                                        str += (char)(0x80 | (d & 0x3F));
+                                                        tmp[0] = (byte)(0xC0 | ((d & 0x7C0) >> 6));
+                                                        tmp[1] = (byte)(0x80 | (d & 0x3F));
+                                                        size = 2;
                                                     }
                                                     else if (uni <= 0xFFFF)
                                                     {
                                                         uint d = uni & 0xFFFF;
-                                                        str += (char)(0xE0 | ((d & 0xF000) >> 12));
-                                                        str += (char)(0x80 | ((d & 0xFC0) >> 6));
-                                                        str += (char)(0x80 | (d & 0x3F));
+                                                        tmp[0] = (byte)(0xE0 | ((d & 0xF000) >> 12));
+                                                        tmp[1] = (byte)(0x80 | ((d & 0xFC0) >> 6));
+                                                        tmp[2] = (byte)(0x80 | (d & 0x3F));
+                                                        size = 3;
                                                     }
                                                     else if (uni <= 0x10FFFF)
                                                     {
                                                         uint d = uni & 0x10FFFF;
-                                                        str += (char)(0xF0 | ((d & 0x1C0000) >> 18));
-                                                        str += (char)(0x80 | ((d & 0x3F000) >> 12));
-                                                        str += (char)(0x80 | ((d & 0xFC0) >> 6));
-                                                        str += (char)(0x80 | (d & 0x3F));
+                                                        tmp[0] = (byte)(0xF0 | ((d & 0x1C0000) >> 18));
+                                                        tmp[1] = (byte)(0x80 | ((d & 0x3F000) >> 12));
+                                                        tmp[2] = (byte)(0x80 | ((d & 0xFC0) >> 6));
+                                                        tmp[3] = (byte)(0x80 | (d & 0x3F));
+                                                        size = 4;
                                                     }
                                                     else
                                                     {
                                                         _Logger.Log(_Line, _Column, LogLevel.Error, "Invalid Unicode range.");
+                                                    }
+
+                                                    if(size != 0)
+                                                    {
+                                                        UTF8Encoding utf8 = new UTF8Encoding();
+                                                        str += utf8.GetString(tmp, 0, size);
                                                     }
                                                 }
                                                 else//Binary

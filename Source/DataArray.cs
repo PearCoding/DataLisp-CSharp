@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace DataLisp
 {
-    class DataArray
+    public class DataArray
     {
         List<Data> _List = new List<Data>();
 

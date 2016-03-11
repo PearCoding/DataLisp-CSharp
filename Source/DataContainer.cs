@@ -32,11 +32,11 @@ using System.Collections.Generic;
 
 namespace DataLisp
 {
-    class DataContainer
+    public class DataContainer
     {
         List<DataGroup> _TopGroups = new List<DataGroup>();
 
-        public void Build(Internal.SyntaxTree tree)
+        internal void Build(Internal.SyntaxTree tree)
         {
             foreach(Internal.StatementNode n in tree.Nodes)
             {

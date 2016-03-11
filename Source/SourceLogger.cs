@@ -32,8 +32,7 @@ using System;
 
 namespace DataLisp
 {
-
-    class SourceLogger : Logger
+    public class SourceLogger : Logger
     {
         int _WarningCount = 0;
         public int WarningCount

@@ -30,7 +30,7 @@
 
 namespace DataLisp
 {
-    enum DataType
+    public enum DataType
     {
         Group,
         Integer,
@@ -40,7 +40,7 @@ namespace DataLisp
         Array
     }
 
-    class Data
+    public class Data
     {
         public string Key { get; set; }
 

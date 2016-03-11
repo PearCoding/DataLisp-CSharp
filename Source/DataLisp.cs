@@ -30,7 +30,7 @@
 
 namespace DataLisp
 {
-    class DataLisp
+    public class DataLisp
     {
         Logger _Logger;
         Internal.SyntaxTree _Tree;
